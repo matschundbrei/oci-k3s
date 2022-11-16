@@ -4,7 +4,7 @@ resource "oci_core_vcn" "k3snet" {
   dns_label      = "solutrk3s"
   is_ipv6enabled = true
   cidr_blocks = [
-    "10.42.235.0/24",
+    var.v4_cidr,
   ]
 }
 
@@ -32,20 +32,13 @@ resource "oci_core_internet_gateway" "k3snet" {
   route_table_id = oci_core_vcn.k3snet.default_route_table_id
 }
 
-locals {
-  subnets = [
-    "10.42.235.0/25",
-    "10.42.235.128/25",
-  ]
-}
-
 resource "oci_core_subnet" "k3snet" {
   count          = 2
-  cidr_block     = local.subnets[count.index]
+  cidr_block     = cidrsubnet(var.v4_cidr, 1, count.index)
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.k3snet.id
-  dns_label      = "subnet${count.index}"
-  display_name   = "K3s VCN Subnet ${count.index}"
+  dns_label      = "sn${count.index + 1}"
+  display_name   = "K3s VCN Subnet ${count.index + 1}"
 }
 
 resource "oci_core_route_table_attachment" "k3snet_sub" {
@@ -67,7 +60,6 @@ resource "oci_core_network_security_group_security_rule" "allow_outbound_v6" {
   direction                 = "EGRESS"
   destination_type          = "CIDR_BLOCK"
   destination               = "::/0"
-  source_type               = "CIDR_BLOCK"
   source                    = oci_core_vcn.k3snet.ipv6cidr_blocks[count.index]
   protocol                  = "all"
 }
@@ -79,7 +71,6 @@ resource "oci_core_network_security_group_security_rule" "allow_outbound_v4" {
   direction                 = "EGRESS"
   destination_type          = "CIDR_BLOCK"
   destination               = "0.0.0.0/0"
-  source_type               = "CIDR_BLOCK"
   source                    = oci_core_vcn.k3snet.cidr_blocks[count.index]
   protocol                  = "all"
 }
@@ -89,7 +80,6 @@ resource "oci_core_network_security_group" "world_ssh" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.k3snet.id
   display_name   = "Open SSH Port to Everyone"
-
 }
 
 resource "oci_core_network_security_group_security_rule" "world_ssh_v6" {
@@ -97,7 +87,6 @@ resource "oci_core_network_security_group_security_rule" "world_ssh_v6" {
   description               = "Opens port 22 for TCP from all sources (IPv6)"
   network_security_group_id = oci_core_network_security_group.world_ssh.id
   direction                 = "INGRESS"
-  destination_type          = "CIDR_BLOCK"
   destination               = oci_core_vcn.k3snet.ipv6cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   source                    = "::/0"
@@ -115,7 +104,6 @@ resource "oci_core_network_security_group_security_rule" "world_ssh_v4" {
   description               = "Opens port 22 for TCP from all sources (IPv4)"
   network_security_group_id = oci_core_network_security_group.world_ssh.id
   direction                 = "INGRESS"
-  destination_type          = "CIDR_BLOCK"
   destination               = oci_core_vcn.k3snet.cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   source                    = "0.0.0.0/0"
@@ -139,7 +127,6 @@ resource "oci_core_network_security_group_security_rule" "http_v6" {
   description               = "Opens port 80 for TCP from all sources (IPv6)"
   network_security_group_id = oci_core_network_security_group.http_https.id
   direction                 = "INGRESS"
-  destination_type          = "CIDR_BLOCK"
   destination               = oci_core_vcn.k3snet.ipv6cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   source                    = "::/0"
@@ -157,7 +144,6 @@ resource "oci_core_network_security_group_security_rule" "http_v4" {
   description               = "Opens port 80 for TCP from all sources (IPv4)"
   network_security_group_id = oci_core_network_security_group.http_https.id
   direction                 = "INGRESS"
-  destination_type          = "CIDR_BLOCK"
   destination               = oci_core_vcn.k3snet.cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   source                    = "0.0.0.0/0"
@@ -175,7 +161,6 @@ resource "oci_core_network_security_group_security_rule" "https_v6" {
   description               = "Opens port 443 for TCP from all sources (IPv6)"
   network_security_group_id = oci_core_network_security_group.http_https.id
   direction                 = "INGRESS"
-  destination_type          = "CIDR_BLOCK"
   destination               = oci_core_vcn.k3snet.ipv6cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   source                    = "::/0"
@@ -193,7 +178,6 @@ resource "oci_core_network_security_group_security_rule" "https_v4" {
   description               = "Opens port 443 for TCP from all sources (IPv4)"
   network_security_group_id = oci_core_network_security_group.http_https.id
   direction                 = "INGRESS"
-  destination_type          = "CIDR_BLOCK"
   destination               = oci_core_vcn.k3snet.cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   source                    = "0.0.0.0/0"

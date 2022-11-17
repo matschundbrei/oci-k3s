@@ -30,6 +30,13 @@ resource "oci_core_instance" "k3s_main" {
   }
 }
 
+# TODO:
+# Create oci_core_ipv6 resource for each instance vnic
+
+locals {
+  main_node_dns_name = "${oci_core_instance.k3s_main.create_vnic_details[0].hostname_label}.${oci_core_subnet.k3snet[0].subnet_domain_name}"
+}
+
 resource "oci_core_instance" "k3s_nodes" {
   count               = 2
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[count.index + 1].name
@@ -60,6 +67,6 @@ resource "oci_core_instance" "k3s_nodes" {
     ssh_authorized_keys = var.ssh_authorized_keys
     user_data           = filebase64("${path.module}/scripts/k3s_node_user_data.sh")
     k3s_secret          = var.k3s_secret
-    k3s_main            = oci_core_instance.k3s_main.private_ip
+    k3s_main            = local.main_node_dns_name
   }
 }

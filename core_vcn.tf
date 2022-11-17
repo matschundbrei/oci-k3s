@@ -35,6 +35,7 @@ resource "oci_core_internet_gateway" "k3snet" {
 resource "oci_core_subnet" "k3snet" {
   count          = 2
   cidr_block     = cidrsubnet(var.v4_cidr, 1, count.index)
+  ipv6cidr_block = cidrsubnet(oci_core_vcn.k3snet.ipv6cidr_blocks[0], 8, count.index)
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.k3snet.id
   dns_label      = "sn${count.index + 1}"

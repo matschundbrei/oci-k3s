@@ -8,6 +8,19 @@ variable "compartment_id" {
 variable "v4_cidr" {
   description = "Private IPv4 Adress space for the VCN as CIDR"
   default     = "10.42.235.0/24"
+  type        = string
+}
+
+variable "k3s_cluster_cidr" {
+  description = "Private IPv4 Cluster CIDR for K3s"
+  default     = "10.42.1.0/24"
+  type        = string
+}
+
+variable "k3s_service_cidr" {
+  description = "Private IPv4 Cluster CIDR for K3s"
+  default     = "10.42.42.0/24"
+  type        = string
 }
 
 variable "ssh_authorized_keys" {

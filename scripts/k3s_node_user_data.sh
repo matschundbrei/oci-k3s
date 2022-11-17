@@ -11,8 +11,13 @@ sudo apt-get -y upgrade
 # install fun tools
 sudo apt-get -y install jq 
 
-export K3S_TOKEN=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_secret')
-export K3S_MAIN_HOST=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_main')
-export K3S_NODE_IP=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/vnics/ | jq -r '.[].privateIp')
+export MAIN_HOST=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_main')
 
-curl -sfL https://get.k3s.io | sudo -E sh -s - server --server https://${K3S_MAIN_HOST}:6443
+export NODE_IP4=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/vnics/ | jq -r '.[].privateIp')
+export CLUSTER_CIDR=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_cluster_cidr')
+export SERVICE_CIDR=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_service_cidr')
+
+export K3S_TOKEN=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_secret')
+
+
+curl -sfL https://get.k3s.io | sudo -E sh -s - server --node-ip "${NODE_IP4}" --cluster-cidr "${CLUSTER_CIDR}" --service-cidr "${SERVICE_CIDR}" --server https://${MAIN_HOST}:6443

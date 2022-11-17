@@ -63,7 +63,10 @@ No modules.
 | [oci_core_route_table_attachment.k3snet_sub](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table_attachment) | resource |
 | [oci_core_subnet.k3snet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) | resource |
 | [oci_core_vcn.k3snet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn) | resource |
-| [oci_objectstorage_bucket.solutr](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/objectstorage_bucket) | resource |
+| [oci_identity_customer_secret_key.etcd_s3_compat_snapshots](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_customer_secret_key) | resource |
+| [oci_identity_policy.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_policy) | resource |
+| [oci_identity_user.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_user) | resource |
+| [oci_objectstorage_bucket.etcd_backup](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/objectstorage_bucket) | resource |
 | [oci_core_images.ubuntu_arm](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_images) | data source |
 | [oci_core_vnic_attachments.all](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_vnic_attachments) | data source |
 | [oci_identity_availability_domains.this](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_availability_domains) | data source |
@@ -80,10 +83,12 @@ No modules.
 | <a name="input_k3s_service_cidr"></a> [k3s\_service\_cidr](#input\_k3s\_service\_cidr) | Private IPv4 Cluster CIDR for K3s | `string` | `"10.42.42.0/24"` | no |
 | <a name="input_region"></a> [region](#input\_region) | an OCI region in order for this stack to work, we need one with three (3) availability\_domains (AD) | `string` | `"eu-frankfurt-1"` | no |
 | <a name="input_ssh_authorized_keys"></a> [ssh\_authorized\_keys](#input\_ssh\_authorized\_keys) | ssh-key to add to authorized\_keys | `string` | n/a | yes |
+| <a name="input_sync_email_user"></a> [sync\_email\_user](#input\_sync\_email\_user) | primary email address for the user created | `string` | `"kim@example.org"` | no |
 | <a name="input_v4_cidr"></a> [v4\_cidr](#input\_v4\_cidr) | Private IPv4 Adress space for the VCN as CIDR | `string` | `"10.42.235.0/24"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_oci_oicd_name"></a> [oci\_oicd\_name](#output\_oci\_oicd\_name) | n/a |
+| <a name="output_public_ipv4_addresses"></a> [public\_ipv4\_addresses](#output\_public\_ipv4\_addresses) | an object containing nodename (hostlabel) => public v4 address |
+| <a name="output_public_ipv6_addresses"></a> [public\_ipv6\_addresses](#output\_public\_ipv6\_addresses) | an object containing nodename (hostlabel) => public v6 address |

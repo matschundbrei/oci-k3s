@@ -1,3 +1,14 @@
+locals {
+  main_node_dns_name = "${oci_core_instance.k3s_main.create_vnic_details[0].hostname_label}.${oci_core_subnet.k3snet[0].subnet_domain_name}"
+  metadata_generic = {
+    ssh_authorized_keys = var.ssh_authorized_keys
+    k3s_secret          = var.k3s_secret
+    k3s_cluster_cidr    = var.k3s_cluster_cidr
+    k3s_service_cidr    = var.k3s_service_cidr
+  }
+}
+
+
 resource "oci_core_instance" "k3s_main" {
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[0].name
   compartment_id      = data.oci_identity_availability_domains.this.availability_domains[0].compartment_id
@@ -23,18 +34,9 @@ resource "oci_core_instance" "k3s_main" {
       oci_core_network_security_group.http_https.id,
     ]
   }
-  metadata = {
-    ssh_authorized_keys = var.ssh_authorized_keys
-    user_data           = filebase64("${path.module}/scripts/k3s_master_user_data.sh")
-    k3s_secret          = var.k3s_secret
-  }
-}
-
-# TODO:
-# Create oci_core_ipv6 resource for each instance vnic
-
-locals {
-  main_node_dns_name = "${oci_core_instance.k3s_main.create_vnic_details[0].hostname_label}.${oci_core_subnet.k3snet[0].subnet_domain_name}"
+  metadata = merge({
+    user_data = filebase64("${path.module}/scripts/k3s_master_user_data.sh")
+  }, local.metadata_generic)
 }
 
 resource "oci_core_instance" "k3s_nodes" {
@@ -63,10 +65,29 @@ resource "oci_core_instance" "k3s_nodes" {
       oci_core_network_security_group.http_https.id,
     ]
   }
-  metadata = {
-    ssh_authorized_keys = var.ssh_authorized_keys
-    user_data           = filebase64("${path.module}/scripts/k3s_node_user_data.sh")
-    k3s_secret          = var.k3s_secret
-    k3s_main            = local.main_node_dns_name
-  }
+  metadata = merge({
+    user_data = filebase64("${path.module}/scripts/k3s_node_user_data.sh")
+    k3s_main  = local.main_node_dns_name
+  }, local.metadata_generic)
+}
+
+
+data "oci_core_vnic_attachments" "main" {
+  compartment_id = var.compartment_id
+  instance_id    = oci_core_instance.k3s_main.id
+}
+
+data "oci_core_vnic_attachments" "nodes" {
+  count          = 2
+  compartment_id = var.compartment_id
+  instance_id    = oci_core_instance.k3s_nodes[count.index].id
+}
+
+resource "oci_core_ipv6" "main" {
+  vnic_id = data.oci_core_vnic_attachments.main.vnic_attachments[0].id
+}
+
+resource "oci_core_ipv6" "nodes" {
+  count   = 2
+  vnic_id = data.oci_core_vnic_attachments.nodes[count.index].vnic_attachments[0].id
 }

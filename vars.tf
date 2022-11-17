@@ -5,6 +5,12 @@ variable "compartment_id" {
   type        = string
 }
 
+variable "region" {
+  description = "an OCI region in order for this stack to work, we need one with three (3) availability_domains (AD)"
+  type        = string
+  default     = "eu-frankfurt-1"
+}
+
 variable "v4_cidr" {
   description = "Private IPv4 Adress space for the VCN as CIDR"
   default     = "10.42.235.0/24"

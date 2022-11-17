@@ -10,6 +10,14 @@ It will set up a IPv6 enabled virtual network and three K3s Nodes based on Ubunt
 
 This should be great to test and run small apps or learn more about kubernetes.
 
+1. [Create an account with OCI](https://signup.oraclecloud.com/)
+2. [Fork this repo](https://github.com/matschundbrei/oci-k3s/fork)
+3. [Create an personal access token on Github with the 'repo' scope](https://github.com/settings/tokens)
+4. [Create a stack from Git in your OCI](https://docs.oracle.com/en-us/iaas/Content/ResourceManager/Tasks/create-stack-git.htm)
+5. Fill out the variables
+6. ...
+7. Profit!
+
 ## Background
 
 It was the brink of the pumpkin spiced latte season when my favorite cloud commentator [Corey Quinn](https://twitter.com/QuinnyPig) (Website: [lastweekinaws.com](https://www.lastweekinaws.com/)) mentioned that the Oracle Cloud actually has a [free tier](https://www.oracle.com/cloud/free/) (as in 'free beer' not 'free lunch' like with most other providers). To my complete surprise this turned out to be true, so I thought to myself, maybe we can do something sensible with this.

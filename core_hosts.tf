@@ -95,6 +95,6 @@ locals {
 }
 
 resource "oci_core_ipv6" "ipv6_address" {
-  for_each = toset(local.my_vnics)
-  vnic_id  = each.value
+  count   = 3
+  vnic_id = local.my_vnics[count.index]
 }

@@ -50,7 +50,7 @@ resource "oci_core_route_table_attachment" "k3snet_sub" {
 resource "oci_core_network_security_group" "allow_outbound" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.k3snet.id
-  display_name   = "Allow Outbound"
+  display_name   = "Allow Outbound and Internal"
 }
 
 resource "oci_core_network_security_group_security_rule" "allow_outbound_v6" {
@@ -72,6 +72,28 @@ resource "oci_core_network_security_group_security_rule" "allow_outbound_v4" {
   destination_type          = "CIDR_BLOCK"
   destination               = "0.0.0.0/0"
   source                    = oci_core_vcn.k3snet.cidr_blocks[count.index]
+  protocol                  = "all"
+}
+
+resource "oci_core_network_security_group_security_rule" "allow_internal_v4" {
+  count                     = length(oci_core_vcn.k3snet.cidr_blocks)
+  description               = "Allows internal traffic from VCN"
+  network_security_group_id = oci_core_network_security_group.allow_outbound.id
+  direction                 = "INGRESS"
+  destination               = oci_core_vcn.k3snet.cidr_blocks[count.index]
+  source                    = oci_core_vcn.k3snet.cidr_blocks[count.index]
+  source_type               = "CIDR_BLOCK"
+  protocol                  = "all"
+}
+
+resource "oci_core_network_security_group_security_rule" "allow_internal_v6" {
+  count                     = length(oci_core_vcn.k3snet.ipv6cidr_blocks)
+  description               = "Allows internal traffic from VCN"
+  network_security_group_id = oci_core_network_security_group.allow_outbound.id
+  direction                 = "INGRESS"
+  destination               = oci_core_vcn.k3snet.ipv6cidr_blocks[count.index]
+  source                    = oci_core_vcn.k3snet.ipv6cidr_blocks[count.index]
+  source_type               = "CIDR_BLOCK"
   protocol                  = "all"
 }
 

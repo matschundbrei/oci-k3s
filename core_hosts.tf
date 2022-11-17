@@ -5,6 +5,8 @@ locals {
     k3s_secret          = var.k3s_secret
     k3s_cluster_cidr    = var.k3s_cluster_cidr
     k3s_service_cidr    = var.k3s_service_cidr
+    vcn_v4_cidr         = oci_core_vcn.k3snet.cidr_blocks[0]
+    vcn_v6_cidr         = oci_core_vcn.k3snet.ipv6cidr_blocks[0]
   }
 }
 
@@ -44,7 +46,7 @@ resource "oci_core_instance" "k3s_nodes" {
   availability_domain = data.oci_identity_availability_domains.this.availability_domains[count.index + 1].name
   compartment_id      = data.oci_identity_availability_domains.this.availability_domains[count.index + 1].compartment_id
   shape               = "VM.Standard.A1.Flex"
-  display_name        = "K3s Main Node ${count.index + 1}"
+  display_name        = "K3s Node ${count.index + 1}"
   source_details {
     source_type = "image"
     source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa7xlh7c3l2xtrn53n5ezp2thnac3hgjo6biolfxisk3l4igfl3xba"
@@ -72,22 +74,27 @@ resource "oci_core_instance" "k3s_nodes" {
 }
 
 
-data "oci_core_vnic_attachments" "main" {
+data "oci_core_vnic_attachments" "all" {
   compartment_id = var.compartment_id
-  instance_id    = oci_core_instance.k3s_main.id
+  depends_on = [
+    oci_core_instance.k3s_main,
+    oci_core_instance.k3s_nodes
+  ]
 }
 
-data "oci_core_vnic_attachments" "nodes" {
-  count          = 2
-  compartment_id = var.compartment_id
-  instance_id    = oci_core_instance.k3s_nodes[count.index].id
+locals {
+  my_ids = [
+    oci_core_instance.k3s_main.id,
+    oci_core_instance.k3s_nodes[0].id,
+    oci_core_instance.k3s_nodes[1].id,
+  ]
+  my_vnics = [
+    for vnic in data.oci_core_vnic_attachments.all.vnic_attachments :
+    vnic.vnic_id if contains(local.my_ids, vnic.instance_id)
+  ]
 }
 
-resource "oci_core_ipv6" "main" {
-  vnic_id = data.oci_core_vnic_attachments.main.vnic_attachments[0].id
-}
-
-resource "oci_core_ipv6" "nodes" {
-  count   = 2
-  vnic_id = data.oci_core_vnic_attachments.nodes[count.index].vnic_attachments[0].id
+resource "oci_core_ipv6" "ipv6_address" {
+  for_each = toset(local.my_vnics)
+  vnic_id  = each.value
 }

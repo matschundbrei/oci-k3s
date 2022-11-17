@@ -39,3 +39,8 @@ variable "k3s_secret" {
   type        = string
   sensitive   = true
 }
+variable "sync_email_user" {
+  description = "primary email address for the user created"
+  type        = string
+  default     = "kim@example.org"
+}

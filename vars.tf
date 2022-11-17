@@ -25,13 +25,11 @@ variable "k3s_service_cidr" {
 
 variable "ssh_authorized_keys" {
   description = "ssh-key to add to authorized_keys"
-  default     = "***REMOVED***"
   type        = string
 }
 
 variable "k3s_secret" {
   description = "k3s secret for joining instances etc"
-  default     = "***REMOVED***"
   type        = string
   sensitive   = true
 }

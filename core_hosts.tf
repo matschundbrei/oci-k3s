@@ -39,7 +39,11 @@ resource "oci_core_instance" "k3s_main" {
     ]
   }
   metadata = merge({
-    user_data = filebase64("${path.module}/scripts/k3s_master_user_data.sh")
+    user_data       = filebase64("${path.module}/scripts/k3s_master_user_data.sh")
+    s3_access_key   = local.s3_compat_api_access_key
+    s3_secret_key   = local.s3_compat_api_secret_key
+    s3_endpoint_url = local.s3_compat_api_endpoint
+    s3_bucket_name  = oci_objectstorage_bucket.etcd_backup.name
   }, local.metadata_generic)
 }
 

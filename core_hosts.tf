@@ -8,6 +8,8 @@ locals {
     vcn_v4_cidr         = oci_core_vcn.k3snet.cidr_blocks[0]
     vcn_v6_cidr         = oci_core_vcn.k3snet.ipv6cidr_blocks[0]
   }
+
+  current_ubuntu_image_id = data.oci_core_images.ubuntu_arm.images[0].id
 }
 
 
@@ -18,7 +20,7 @@ resource "oci_core_instance" "k3s_main" {
   display_name        = "K3s Main Node"
   source_details {
     source_type = "image"
-    source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa7xlh7c3l2xtrn53n5ezp2thnac3hgjo6biolfxisk3l4igfl3xba"
+    source_id   = local.current_ubuntu_image_id
   }
   shape_config {
     ocpus         = 1
@@ -49,7 +51,7 @@ resource "oci_core_instance" "k3s_nodes" {
   display_name        = "K3s Node ${count.index + 1}"
   source_details {
     source_type = "image"
-    source_id   = "ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa7xlh7c3l2xtrn53n5ezp2thnac3hgjo6biolfxisk3l4igfl3xba"
+    source_id   = local.current_ubuntu_image_id
   }
   shape_config {
     ocpus         = 1

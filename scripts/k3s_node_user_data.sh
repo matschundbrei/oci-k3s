@@ -21,7 +21,7 @@ export VCN_CIDR_IPV6=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169
 
 sleep 30 # in the hope that the ipv6 address is configured afterwards
 
-export NODE_IP6=$(sudo ip -6 -j address show dev enp0s3 | jq -r '.[].addr_info[] | if .scope == "global" then "\(.local)/\(.prefixlen)" else empty end')
+export NODE_IP6=$(sudo ip -6 -j address show dev enp0s3 | jq -r '.[].addr_info[] | if .scope == "global" then .local else empty end')
 
 if [[ -z "$NODE_IP6" ]]; then
   echo "Warning: no ipv6 address found!"
@@ -49,4 +49,4 @@ sudo -E ip6tables-save | sudo tee /etc/iptables/rules.v6 > /dev/null
 export K3S_TOKEN=$(curl -sSL -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/ | jq -r '.metadata.k3s_secret')
 
 
-curl -sfL https://get.k3s.io | sudo -E sh -s - server --node-ip "${NODE_IP}" --advertise-address "${NODE_IP4}" --cluster-cidr "${CLUSTER_CIDR}" --service-cidr "${SERVICE_CIDR}" --server https://${MAIN_HOST}:6443
+curl -sfL https://get.k3s.io | sudo -E sh -s - server --node-ip "${NODE_IP}" --cluster-cidr "${CLUSTER_CIDR}" --service-cidr "${SERVICE_CIDR}" --server https://${MAIN_HOST}:6443

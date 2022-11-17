@@ -1,6 +1,6 @@
 # OCI K3s for Free
 
-An Oracle Cloud Resource Manager ready stack to deploy a three node K3s cluster for free.
+An Oracle Cloud Resource Manager ready stack to deploy an ARM based three node K3s cluster for free.
 
 ## Synopsis
 

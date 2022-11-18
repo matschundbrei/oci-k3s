@@ -24,33 +24,30 @@ locals {
   policy_target = (
     startswith(var.compartment_id, "ocid1.tenancy")
     ? "tenancy"
-    : "compartment ${data.oci_identity_compartment.this.name}"
+    : "compartment '${data.oci_identity_compartment.this.name}'"
   )
 
 }
 
 resource "oci_identity_group" "etcd_bucket_access" {
-  compartment_id = (
-    startswith(var.compartment_id, "ocid1.tenancy")
-    ? var.compartment_id
-    : data.oci_identity_compartment.this.compartment_id # try with the parent
-  )
-  description = "group for the users that are allowed to access etcd snapshots"
-  name        = "K3sEtcd"
+  compartment_id = var.tenancy_id
+  description    = "group for the users that are allowed to access etcd snapshots"
+  name           = "K3sEtcd"
 }
 
 resource "oci_identity_policy" "etcd_bucket_access" {
-  compartment_id = (
-    startswith(var.compartment_id, "ocid1.tenancy")
-    ? var.compartment_id
-    : data.oci_identity_compartment.this.compartment_id # try with the parent
-  )
-  description = "provides access to etcd-bucket for k3s-etcd-snapshots user"
-  name        = "K3sEtcd"
+  compartment_id = var.tenancy_id
+  description    = "provides access to etcd-bucket for k3s-etcd-snapshots user"
+  name           = "K3sEtcd"
   statements = [
     "Allow group '${oci_identity_group.etcd_bucket_access.name}' to read buckets in ${local.policy_target}",
     "Allow group '${oci_identity_group.etcd_bucket_access.name}' to manage objects in ${local.policy_target} where all {target.bucket.name='${oci_objectstorage_bucket.etcd_backup.name}', any {request.permission='OBJECT_CREATE', request.permission='OBJECT_INSPECT'}}",
   ]
+}
+
+resource "oci_identity_user_group_membership" "etcd_bucket_access" {
+  group_id = oci_identity_group.etcd_bucket_access.id
+  user_id  = oci_identity_user.etcd_bucket_access.id
 }
 
 resource "oci_identity_customer_secret_key" "etcd_s3_compat_snapshots" {

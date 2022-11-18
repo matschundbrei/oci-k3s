@@ -1,10 +1,10 @@
 # https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five
-variable "compartment_id" {
+variable "compartment_ocid" {
   description = "the id of the compartment to deploy the resources to"
   type        = string
 }
 
-variable "tenancy_id" {
+variable "tenancy_ocid" {
   description = "the id of the tenancy to deploy the policy and group resources to"
   type        = string
 }

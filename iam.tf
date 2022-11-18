@@ -4,7 +4,7 @@ locals {
 }
 
 resource "oci_identity_user" "etcd_bucket_access" {
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   description    = "provides access to buckets via s3 api"
   name           = "K3sEtcd"
   email          = var.sync_email_user
@@ -22,7 +22,7 @@ resource "oci_identity_user_capabilities_management" "etcd_bucket_access" {
 locals {
   # small bit of magic to create printable policy target
   policy_target = (
-    startswith(var.compartment_id, "ocid1.tenancy")
+    startswith(var.compartment_ocid, "ocid1.tenancy")
     ? "tenancy"
     : "compartment '${data.oci_identity_compartment.this.name}'"
   )
@@ -30,13 +30,13 @@ locals {
 }
 
 resource "oci_identity_group" "etcd_bucket_access" {
-  compartment_id = var.tenancy_id
+  compartment_id = var.tenancy_ocid
   description    = "group for the users that are allowed to access etcd snapshots"
   name           = "K3sEtcd"
 }
 
 resource "oci_identity_policy" "etcd_bucket_access" {
-  compartment_id = var.tenancy_id
+  compartment_id = var.tenancy_ocid
   description    = "provides access to etcd-bucket for k3s-etcd-snapshots user"
   name           = "K3sEtcd"
   statements = [

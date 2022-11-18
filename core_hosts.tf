@@ -81,7 +81,7 @@ resource "oci_core_instance" "k3s_nodes" {
 
 
 data "oci_core_vnic_attachments" "all" {
-  compartment_id = var.compartment_id
+  compartment_id = var.compartment_ocid
   depends_on = [
     oci_core_instance.k3s_main,
     oci_core_instance.k3s_nodes

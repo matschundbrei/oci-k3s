@@ -64,8 +64,11 @@ No modules.
 | [oci_core_subnet.k3snet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) | resource |
 | [oci_core_vcn.k3snet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn) | resource |
 | [oci_identity_customer_secret_key.etcd_s3_compat_snapshots](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_customer_secret_key) | resource |
+| [oci_identity_group.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_group) | resource |
 | [oci_identity_policy.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_policy) | resource |
 | [oci_identity_user.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_user) | resource |
+| [oci_identity_user_capabilities_management.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_user_capabilities_management) | resource |
+| [oci_identity_user_group_membership.etcd_bucket_access](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_user_group_membership) | resource |
 | [oci_objectstorage_bucket.etcd_backup](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/objectstorage_bucket) | resource |
 | [oci_core_images.ubuntu_arm](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_images) | data source |
 | [oci_core_vnic_attachments.all](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_vnic_attachments) | data source |
@@ -77,13 +80,14 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | an abstract organisational level that OCI did not document very well | `string` | `"ocid1.tenancy.oc1..aaaaabbbbbccccccdddddd"` | no |
+| <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | the id of the compartment to deploy the resources to | `string` | `"ocid1.compartment.oc1..aaaaabbbbbccccccdddddd"` | no |
 | <a name="input_k3s_cluster_cidr"></a> [k3s\_cluster\_cidr](#input\_k3s\_cluster\_cidr) | Private IPv4 Cluster CIDR for K3s | `string` | `"10.42.1.0/24"` | no |
 | <a name="input_k3s_secret"></a> [k3s\_secret](#input\_k3s\_secret) | k3s secret for joining instances etc | `string` | n/a | yes |
 | <a name="input_k3s_service_cidr"></a> [k3s\_service\_cidr](#input\_k3s\_service\_cidr) | Private IPv4 Cluster CIDR for K3s | `string` | `"10.42.42.0/24"` | no |
 | <a name="input_region"></a> [region](#input\_region) | an OCI region in order for this stack to work, we need one with three (3) availability\_domains (AD) | `string` | `"eu-frankfurt-1"` | no |
 | <a name="input_ssh_authorized_keys"></a> [ssh\_authorized\_keys](#input\_ssh\_authorized\_keys) | ssh-key to add to authorized\_keys | `string` | n/a | yes |
 | <a name="input_sync_email_user"></a> [sync\_email\_user](#input\_sync\_email\_user) | primary email address for the user created | `string` | `"kim@example.org"` | no |
+| <a name="input_tenancy_id"></a> [tenancy\_id](#input\_tenancy\_id) | the id of the tenancy to deploy the iam resources to (identical to compartment\_id, if you want to deploy everything in the 'root' compartment) | `string` | `"ocid1.tenancy.oc1..aaaaabbbbbccccccdddddd"` | no |
 | <a name="input_v4_cidr"></a> [v4\_cidr](#input\_v4\_cidr) | Private IPv4 Adress space for the VCN as CIDR | `string` | `"10.42.235.0/24"` | no |
 
 ## Outputs

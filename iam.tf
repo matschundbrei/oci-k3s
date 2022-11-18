@@ -10,13 +10,20 @@ resource "oci_identity_user" "etcd_bucket_access" {
   email          = var.sync_email_user
 }
 
+resource "oci_identity_group" "etcd_bucket_access" {
+  compartment_id = var.compartment_id
+  description = "group for the users that are allowed to access etcd snapshots"
+  name = "k3s-etcd-snapshots"
+
+}
+
 resource "oci_identity_policy" "etcd_bucket_access" {
   compartment_id = var.compartment_id
   description    = "provides access to etcd-bucket for k3s-etcd-snapshots user"
   name           = "etcd-bucket-access"
   statements = [
-    "Allow user ${oci_identity_user.etcd_bucket_access.name} to read buckets in compartment ${data.oci_identity_compartment.this.name}",
-    "Allow user ${oci_identity_user.etcd_bucket_access.name} to manage objects in compartment ${data.oci_identity_compartment.this.name} where all {target.bucket.name='${oci_objectstorage_bucket.etcd_backup.name}', any {request.permission='OBJECT_CREATE', request.permission='OBJECT_INSPECT'}}",
+    "Allow group ${oci_identity_group.etcd_bucket_access.name} to read buckets in compartment ${data.oci_identity_compartment.this.name}",
+    "Allow group ${oci_identity_group.etcd_bucket_access.name} to manage objects in compartment ${data.oci_identity_compartment.this.name} where all {target.bucket.name='${oci_objectstorage_bucket.etcd_backup.name}', any {request.permission='OBJECT_CREATE', request.permission='OBJECT_INSPECT'}}",
   ]
 }
 

@@ -1,13 +1,11 @@
 # https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#five
 variable "compartment_id" {
   description = "the id of the compartment to deploy the resources to"
-  default     = "ocid1.compartment.oc1..aaaaabbbbbccccccdddddd"
   type        = string
 }
 
 variable "tenancy_id" {
-  description = "the id of the tenancy to deploy the iam resources to (identical to compartment_id, if you want to deploy everything in the 'root' compartment)"
-  default     = "ocid1.tenancy.oc1..aaaaabbbbbccccccdddddd"
+  description = "the id of the tenancy to deploy the policy and group resources to"
   type        = string
 }
 

@@ -5,7 +5,7 @@ variable "compartment_ocid" {
 }
 
 variable "tenancy_ocid" {
-  description = "the id of the tenancy to deploy the policy and group resources to"
+  description = "the id of the tenancy to deploy the policy, user and group resources to"
   type        = string
 }
 

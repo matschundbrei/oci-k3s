@@ -4,7 +4,7 @@ locals {
 }
 
 resource "oci_identity_user" "etcd_bucket_access" {
-  compartment_id = var.compartment_ocid
+  compartment_id = var.tenancy_ocid
   description    = "provides access to buckets via s3 api"
   name           = "K3sEtcd"
   email          = var.sync_email_user
